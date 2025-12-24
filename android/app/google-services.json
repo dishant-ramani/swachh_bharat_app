@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "555102222360",
+    "project_id": "swachh-bharat-cleanliness-app",
+    "storage_bucket": "swachh-bharat-cleanliness-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555102222360:android:d281f3169452b17bf76b6d",
+        "android_client_info": {
+          "package_name": "com.example.swachh_bharat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWpgZQwZI7htbu6EXCaUhSZB3r2PbEgDg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
