@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
 import '../models/app_user.dart';
 
@@ -59,17 +58,24 @@ class AuthService with ChangeNotifier {
   }
 
   // Sign in with email and password
-  Future<UserCredential> signIn({
+  Future<void> signIn({
     required String email,
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
+      // After successful login, fetch and set the user data
+      if (userCredential.user != null) {
+        await getCurrentUserData();
+      }
     } on FirebaseAuthException catch (e) {
       throw _handleAuthError(e);
+    } catch (e) {
+      throw 'An error occurred during login. Please try again.';
     }
   }
 
@@ -81,23 +87,30 @@ class AuthService with ChangeNotifier {
 
   // Get current user data from Firestore
   Future<AppUser?> getCurrentUserData() async {
-    if (_auth.currentUser == null) return null;
-    
     try {
+      if (_auth.currentUser == null) {
+        _currentUser = null;
+        return null;
+      }
+      
       final doc = await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)
           .get();
           
-      if (doc.exists) {
-        _currentUser = AppUser.fromMap(doc.data()!..['uid'] = doc.id);
+      if (doc.exists && doc.data() != null) {
+        _currentUser = AppUser.fromMap({...doc.data()!, 'uid': doc.id});
+        notifyListeners();
         return _currentUser;
+      } else {
+        _currentUser = null;
+        return null;
       }
-      return null;
     } catch (e) {
       if (kDebugMode) {
         print('Error getting user data: $e');
       }
+      _currentUser = null;
       return null;
     }
   }

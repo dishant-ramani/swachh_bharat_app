@@ -49,22 +49,34 @@ class ComplaintService {
         }
       }
 
+      // Create GeoPoint for the location
+      final geoPoint = GeoPoint(position.latitude, position.longitude);
+      final now = DateTime.now();
+
+      // Create the complaint
       final complaint = Complaint(
         complaintId: docRef.id,
         userId: userId,
         category: category,
         description: description,
         photoUrl: imageUrl,
-        location: GeoPoint(position.latitude, position.longitude),
+        location: geoPoint,
         address: address,
-        status: 'pending',
+        status: 'Pending',
         assignedTo: null,
         progressImages: const [],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: now,
+        updatedAt: now,
       );
 
-      await docRef.set(complaint.toMap());
+      // Convert to map and ensure publicId is included
+      final complaintData = complaint.toMap();
+      if (complaint.publicId != null) {
+        complaintData['publicId'] = complaint.publicId;
+      }
+
+      // Save to Firestore
+      await docRef.set(complaintData);
       return complaint;
     } catch (e) {
       debugPrint('Error creating complaint: $e');

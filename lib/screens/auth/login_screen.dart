@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
@@ -32,15 +33,51 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await context.read<AuthService>().signIn(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+      final authService = context.read<AuthService>();
+      
+      // Sign in with email and password
+      await authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
+      
+      // After successful login, get the user data
+      final user = await authService.getCurrentUserData();
+      
+      if (!mounted) return;
+      
+      if (user == null) {
+        throw 'User data not found. Please contact support.';
+      }
+      
+      // Navigate based on user role
+      if (user.role == 'worker') {
+        Navigator.pushReplacementNamed(context, '/worker');
+      } else {
+        Navigator.pushReplacementNamed(context, '/user');
+      }
+      
+    } on FirebaseAuthException catch (e) {
+      String message = 'An error occurred during login. Please try again.';
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        message = 'Invalid email or password. Please try again.';
+      } else if (e.code == 'too-many-requests') {
+        message = 'Too many attempts. Please try again later.';
+      } else if (e.code == 'user-disabled') {
+        message = 'This account has been disabled. Please contact support.';
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
