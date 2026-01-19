@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:swachh_bharat_app/services/cloudinary_service.dart';
 
 import '../models/complaint.dart';
 
 class ComplaintService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final CloudinaryService _cloudinaryService = CloudinaryService();
 
   // Create a new complaint
   Future<Complaint> createComplaint({
@@ -37,12 +37,7 @@ class ComplaintService {
       // Upload image if available
       if (imageFile != null && await imageFile.exists()) {
         try {
-          final ref = _storage
-              .ref()
-              .child('complaints')
-              .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-          await ref.putFile(imageFile);
-          imageUrl = await ref.getDownloadURL();
+          imageUrl = await _cloudinaryService.uploadImage(imageFile);
         } catch (e) {
           debugPrint('Error uploading image: $e');
           // Continue without image if upload fails
@@ -148,16 +143,8 @@ class ComplaintService {
         throw Exception('Image file does not exist');
       }
 
-      // Upload image to storage
-      final ref = _storage
-          .ref()
-          .child('complaints')
-          .child('progress')
-          .child('$complaintId')
-          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-      await ref.putFile(imageFile);
-      final imageUrl = await ref.getDownloadURL();
+      // Upload image to Cloudinary
+      final imageUrl = await _cloudinaryService.uploadImage(imageFile);
 
       // Add to complaint's progress images
       await _firestore.collection('complaints').doc(complaintId).update({
