@@ -4,7 +4,8 @@ import 'package:swachh_bharat_app/models/app_user.dart';
 import 'package:swachh_bharat_app/models/complaint.dart';
 import 'package:swachh_bharat_app/screens/user/complaint_details_screen.dart';
 import 'package:swachh_bharat_app/services/complaint_service.dart';
-//import 'package:swachh_bharat_app/widgets/loading_indicator.dart';
+import 'package:swachh_bharat_app/widgets/standard_error_container.dart';
+import 'package:swachh_bharat_app/widgets/standard_card.dart';
 
 class ComplaintsListScreen extends StatefulWidget {
   final String filter;
@@ -212,6 +213,7 @@ class _ComplaintsListScreenState extends State<ComplaintsListScreen> {
   }
 
   Widget _buildComplaintItem(BuildContext context, Complaint complaint) {
+    final theme = Theme.of(context);
     Color statusColor = Colors.orange;
     if (complaint.status.toLowerCase() == 'completed') {
       statusColor = Colors.green;
@@ -219,96 +221,94 @@ class _ComplaintsListScreenState extends State<ComplaintsListScreen> {
       statusColor = Colors.red;
     }
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ComplaintDetailsScreen(complaint: complaint, complaintId: '',),
+    return StandardCard(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ComplaintDetailsScreen(
+              complaint: complaint, 
+              complaintId: '',
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      complaint.category,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Expanded(
+                child: Text(
+                  complaint.category,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: statusColor),
-                    ),
-                    child: Text(
-                      complaint.status.toUpperCase(),
-                      style: TextStyle(
-                        color: statusColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              if (complaint.description != null) ...[
-                Text(
-                  complaint.description!,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
-              ],
-              if (complaint.photoUrl != null) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    complaint.photoUrl!,
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 120,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image),
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: statusColor),
+                ),
+                child: Text(
+                  complaint.status.toUpperCase(),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
-              ],
-              Text(
-                complaint.address,
-                style: Theme.of(context).textTheme.bodySmall,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${_formatDate(complaint.createdAt)} • ${_formatTime(complaint.createdAt)}',
-                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 8),
+          if (complaint.description != null) ...[
+            Text(
+              complaint.description!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (complaint.photoUrl != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                complaint.photoUrl!,
+                height: 120,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 120,
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.broken_image),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Text(
+            complaint.address,
+            style: theme.textTheme.bodySmall,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${_formatDate(complaint.createdAt)} • ${_formatTime(complaint.createdAt)}',
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
       ),
     );
   }

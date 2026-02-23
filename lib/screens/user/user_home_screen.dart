@@ -5,9 +5,13 @@ import 'package:swachh_bharat_app/models/complaint.dart';
 import 'package:swachh_bharat_app/screens/user/complaint_details_screen.dart';
 import 'package:swachh_bharat_app/screens/user/complaints_list_screen.dart';
 import 'package:swachh_bharat_app/screens/user/new_complaint_screen.dart';
+import 'package:swachh_bharat_app/screens/user/edit_profile_screen.dart';
 import 'package:swachh_bharat_app/services/auth_service.dart';
 import 'package:swachh_bharat_app/services/complaint_service.dart';
 import 'package:swachh_bharat_app/widgets/custom_button.dart';
+import 'package:swachh_bharat_app/widgets/section_header.dart';
+import 'package:swachh_bharat_app/widgets/standard_card.dart';
+import 'package:swachh_bharat_app/widgets/profile_option_tile.dart';
 
 class UserHomeScreen extends StatefulWidget {
   const UserHomeScreen({Key? key}) : super(key: key);
@@ -106,6 +110,7 @@ class _HomeTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 32),
           Text(
             'Report a Complaint',
             style: theme.textTheme.headlineSmall?.copyWith(
@@ -158,11 +163,9 @@ class _HomeTab extends StatelessWidget {
           ),
 
           const SizedBox(height: 24),
-          Text(
-            'Quick Report',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          SectionHeader(
+            title: 'Quick Report',
+            icon: Icons.report_problem_outlined,
           ),
           const SizedBox(height: 12),
           _buildComplaintCategory(
@@ -529,51 +532,56 @@ class _ProfileTab extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 32),
-          _buildProfileSectionTitle(context, 'Account'),
-          _buildProfileItem(
-            context,
+          SectionHeader(
+            title: 'Account',
+            icon: Icons.account_circle_outlined,
+          ),
+          ProfileOptionTile(
             icon: Icons.person_outline,
             title: 'Edit Profile',
             onTap: () {
-              // TODO: Implement edit profile
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EditProfileScreen(),
+                ),
+              );
             },
           ),
-          _buildProfileItem(
-            context,
+          ProfileOptionTile(
             icon: Icons.settings_outlined,
             title: 'Settings',
             onTap: () {
               // TODO: Navigate to settings
             },
           ),
-          _buildProfileItem(
-            context,
+          ProfileOptionTile(
             icon: Icons.help_outline,
             title: 'Help & Support',
             onTap: () {
               // TODO: Show help & support
             },
           ),
-          const SizedBox(height: 16),
-          _buildProfileSectionTitle(context, 'About'),
-          _buildProfileItem(
-            context,
+          const SizedBox(height: 24),
+          SectionHeader(
+            title: 'About',
+            icon: Icons.info_outline,
+          ),
+          ProfileOptionTile(
             icon: Icons.info_outline,
             title: 'About App',
             onTap: () {
               // TODO: Show about dialog
             },
           ),
-          _buildProfileItem(
-            context,
+          ProfileOptionTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
             onTap: () {
               // TODO: Show privacy policy
             },
           ),
-          _buildProfileItem(
-            context,
+          ProfileOptionTile(
             icon: Icons.description_outlined,
             title: 'Terms of Service',
             onTap: () {
@@ -601,40 +609,6 @@ class _ProfileTab extends StatelessWidget {
           ),
           const SizedBox(height: 16),
         ],
-      ),
-    );
-  }
-
-  Widget _buildProfileSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
-      ),
-    );
-  }
-
-  Widget _buildProfileItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    VoidCallback? onTap,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      elevation: 0,
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
       ),
     );
   }

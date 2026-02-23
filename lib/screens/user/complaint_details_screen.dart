@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:swachh_bharat_app/models/complaint.dart';
+import 'package:swachh_bharat_app/widgets/section_header.dart';
+import 'package:swachh_bharat_app/widgets/standard_card.dart';
 
 class ComplaintDetailsScreen extends StatefulWidget {
   final Complaint complaint;
@@ -89,65 +91,63 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Complaint Details'),
-        actions: [
-          // TODO: Add more actions like edit/delete if needed
-        ],
+        centerTitle: true,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 32),
+            
             // Complaint Status Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(complaint.status)
+            StandardCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(complaint.status)
                                 .withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _getStatusColor(complaint.status),
-                            ),
-                          ),
-                          child: Text(
-                            complaint.status.toUpperCase(),
-                            style: TextStyle(
-                              color: _getStatusColor(complaint.status),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _getStatusColor(complaint.status),
                           ),
                         ),
-                        const Spacer(),
-                        Text(
-                          'ID: ${complaint.complaintId.substring(0, 8)}',
-                          style: theme.textTheme.bodySmall,
+                        child: Text(
+                          complaint.status.toUpperCase(),
+                          style: TextStyle(
+                            color: _getStatusColor(complaint.status),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      complaint.category,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _formatDate(complaint.createdAt),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        'ID: ${complaint.complaintId.substring(0, 8)}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    complaint.category,
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _formatDate(complaint.createdAt),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
 
@@ -155,54 +155,59 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen> {
 
             // Complaint Image
             if (complaint.photoUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  complaint.photoUrl!,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 200,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image, size: 48),
-                    );
-                  },
+              StandardCard(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    complaint.photoUrl!,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 200,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.broken_image, size: 48),
+                      );
+                    },
+                  ),
                 ),
               ),
 
             const SizedBox(height: 16),
 
             // Complaint Details
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Description',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(complaint.description),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(
-                      context,
-                      icon: Icons.location_on,
-                      label: 'Location',
-                      value: complaint.address ?? 'Not specified',
-                    ),
-                    const SizedBox(height: 8),
-                    _buildDetailRow(
-                      context,
-                      icon: Icons.update,
-                      label: 'Last Updated',
-                      value: _formatDate(complaint.updatedAt),
-                    ),
-                  ],
-                ),
+            StandardCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionHeader(
+                    title: 'Description',
+                    icon: Icons.description_outlined,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(complaint.description),
+                  const SizedBox(height: 16),
+                  SectionHeader(
+                    title: 'Location',
+                    icon: Icons.location_on_outlined,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    complaint.address ?? 'Not specified',
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  SectionHeader(
+                    title: 'Last Updated',
+                    icon: Icons.update_outlined,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _formatDate(complaint.updatedAt),
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
               ),
             ),
 
@@ -228,47 +233,56 @@ class _ComplaintDetailsScreenState extends State<ComplaintDetailsScreen> {
             // ],
 
             // Feedback Form
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add Feedback',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _feedbackController,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your feedback or update...',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your feedback';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isSubmitting ? null : _submitFeedback,
-                          child: _isSubmitting
-                              ? const CircularProgressIndicator()
-                              : const Text('Submit Feedback'),
-                        ),
-                      ),
-                    ],
+            const SizedBox(height: 24),
+            StandardCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionHeader(
+                    title: 'Add Feedback',
+                    icon: Icons.feedback_outlined,
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _feedbackController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your feedback or update...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your feedback';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitFeedback,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text('Submit Feedback'),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
+import '../../../widgets/standard_error_container.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -93,6 +94,8 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Account'),
+        centerTitle: true,
+        elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -102,7 +105,7 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 Text(
                   'Join Swachh Bharat',
                   style: theme.textTheme.headlineSmall?.copyWith(
@@ -120,27 +123,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 
                 // Error message
                 if (_errorMessage != null)
-                  Container(
-                    padding: const EdgeInsets.all(12),
+                  StandardErrorContainer(
+                    message: _errorMessage!,
                     margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.error_outline, color: theme.colorScheme.error),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _errorMessage!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onErrorContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 
                 // Name field

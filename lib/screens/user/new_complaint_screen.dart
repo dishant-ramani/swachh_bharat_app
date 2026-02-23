@@ -11,6 +11,8 @@ import 'package:swachh_bharat_app/services/complaint_service.dart';
 import 'package:swachh_bharat_app/services/location_service.dart';
 import 'package:swachh_bharat_app/widgets/custom_button.dart';
 import 'package:swachh_bharat_app/widgets/custom_textfield.dart';
+import 'package:swachh_bharat_app/widgets/section_header.dart';
+import 'package:swachh_bharat_app/widgets/standard_error_container.dart';
 
 class NewComplaintScreen extends StatefulWidget {
   final String? initialCategory;
@@ -174,6 +176,8 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Report an Issue'),
+        centerTitle: true,
+        elevation: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -184,35 +188,19 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const SizedBox(height: 32),
+                    
                     // Error message
                     if (_errorMessage != null)
-                      Container(
-                        padding: const EdgeInsets.all(12),
+                      StandardErrorContainer(
+                        message: _errorMessage!,
                         margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.error_outline, color: theme.colorScheme.error),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _errorMessage!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onErrorContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
 
                     // Category dropdown
-                    Text(
-                      'Category *',
-                      style: theme.textTheme.labelLarge,
+                    SectionHeader(
+                      title: 'Category',
+                      icon: Icons.category_outlined,
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
@@ -245,9 +233,14 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
                     // Description
+                    SectionHeader(
+                      title: 'Description',
+                      icon: Icons.description_outlined,
+                    ),
+                    const SizedBox(height: 8),
                     CustomTextField(
                       controller: _descriptionController,
                       label: 'Description *',
@@ -263,12 +256,12 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
                     // Image picker
-                    Text(
-                      'Add Photo (Optional)',
-                      style: theme.textTheme.labelLarge,
+                    SectionHeader(
+                      title: 'Add Photo (Optional)',
+                      icon: Icons.photo_camera_outlined,
                     ),
                     const SizedBox(height: 8),
                     if (_imageFile != null)
@@ -328,9 +321,9 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
                     const SizedBox(height: 24),
 
                     // Location
-                    Text(
-                      'Location',
-                      style: theme.textTheme.labelLarge,
+                    SectionHeader(
+                      title: 'Location',
+                      icon: Icons.location_on_outlined,
                     ),
                     const SizedBox(height: 8),
                     Card(
@@ -361,13 +354,13 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
                                 ),
                               ],
                             ),
-                            if (_currentPosition != null) ...{
+                            if (_currentPosition != null) ...[
                               const SizedBox(height: 8),
                               Text(
                                 'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}',
                                 style: theme.textTheme.bodySmall,
                               ),
-                            },
+                            ],
                           ],
                         ),
                       ),
@@ -376,8 +369,17 @@ class _NewComplaintScreenState extends State<NewComplaintScreen> {
 
                     // Submit button
                     CustomButton(
-                      onPressed: _submitComplaint,
-                      child: const Text('Submit Complaint'),
+                      onPressed: _isLoading ? null : _submitComplaint,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Submit Complaint'),
                     ),
                     const SizedBox(height: 16),
                   ],
