@@ -20,13 +20,14 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
         Provider(create: (_) => ComplaintService()),
+        Provider(create: (_) => UserService()),
         StreamProvider<User?>.value(
           value: FirebaseAuth.instance.authStateChanges(),
           initialData: null,
         ),
         // Add AppUser provider
         StreamProvider<AppUser?>(
-          create: (context) => UserService().userStream(),
+          create: (context) => context.read<UserService>().userStream(),
           initialData: null,
         ),
       ],
@@ -90,7 +91,7 @@ class AuthWrapper extends StatelessWidget {
     }
 
     return FutureBuilder<AppUser?>(
-      future: UserService().getUser(user.uid),
+      future: context.read<UserService>().getUser(user.uid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

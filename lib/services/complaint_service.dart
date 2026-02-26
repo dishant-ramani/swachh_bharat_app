@@ -185,6 +185,24 @@ class ComplaintService {
     }
   }
 
+  // Get worker complaints as a list (one-time fetch)
+  Future<List<Complaint>> getWorkerComplaintsList(String workerId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('complaints')
+          .where('assignedTo', isEqualTo: workerId)
+          .orderBy('createdAt', descending: true)
+          .get();
+      
+      return snapshot.docs
+          .map((doc) => Complaint.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      debugPrint('Error getting worker complaints list: $e');
+      rethrow;
+    }
+  }
+
   // Delete a complaint
   Future<void> deleteComplaint(String complaintId) async {
     try {
